@@ -1,0 +1,13 @@
+<div class="esriPopup" style="visibility: visible;">
+	<div class="esriPopupWrapper" style="position: absolute;">
+		<div class="sizer" style="width: 270px;">
+			<div class="titlePane" style="-webkit-user-select: none;">
+				<div class="title">Zusatzinfo2</div>
+				<div class="titleButton close" title="Schließen"></div>
+			</div>
+	</div>
+	<div class="sizer content" style="width: 270px;">
+		<div class="contentPane" style="max-height: 243px;"><iframe src="http://skydrive.live.com/embed?cid=7BA55B96ACD2634D&amp;resid=7BA55B96ACD2634D%21107&amp;authkey=AHLmWJ9vDZyGRfk&amp;em=2" width="402" height="327" frameborder="0" scrolling="no"></iframe></div>
+		</div>
+	</div>
+</div>
