@@ -58,7 +58,7 @@ dojo.require("dijit.form.ToggleButton");
 *******************************************************/
 
 
-var	WEBMAP_ID = "2e32daa67a494918a07b51aaf28afac7";
+var	WEBMAP_ID = "24c7c2e877674f87a7c5aca20a70f5e9";
 var	BOOKMARKS_ALIAS = "Marktregionen";
 var COLOR_ORDER = "green,green,green,red"; // will only use as many colors as you have content (point) layers
 var BINGMAPS_KEY = "";
@@ -67,12 +67,12 @@ var STARTPOINT_X = 683000.0; // in EPSG 21781
 var STARTPOINT_Y = 247000.0 // in EPSG 21781
 var STARTZOOMLEVEL = 18; 
 
-var SWISSTOPO_BASELAYER_ID = ["ch.swisstopo.pixelkarte-grau","ch.swisstopo.swissimage"]; // ID vom Layer ist aus Capabilities-File vom WMTS ersichtlich
-var SWISSTOPO_BASELAYER_NAME = ["Schwarz-Weiss Hintergrundkarte", "Satellitenbild"] 
+var SWISSTOPO_BASELAYER_ID = ["ch.swisstopo.pixelkarte-farbe","ch.swisstopo.swissimage"]; // ID vom Layer ist aus Capabilities-File vom WMTS ersichtlich
+var SWISSTOPO_BASELAYER_NAME = ["coloured basemap", "satellite imagery"] 
 var SWISSTOPO_BASELAYER_FORMAT ="jpeg"; // Format ist aus Capabilities-File vom WMTS ersichtlich, ist unterschiedlich pro Layer
-var DEFAULT_BASEMAP_LAYERNO = 0; // 0 = Schwarz-Weiss, 1 = Satellite
+var DEFAULT_BASEMAP_LAYERNO = 0; // 0 = farbige Karte, 1 = Satellite
 var SHOWBASEMAPTOGGLE = true;  //Button zum Wechseln der Hintergrundkarte zwischen Schwarzweiss & Satellit
-var TITLE_INFOTAB = "Hintergrundinformationen";
+var TITLE_INFOTAB = "background information";
 
 var INFO_CONTENT = [{
 					id:1, 
@@ -540,6 +540,7 @@ function zoomToStartExtent()
 
 function addWMTSBaseLayer(layerNo)
 {
+	console.log(_map.layerIds);
 	var options = null; 
 	var layerInfo = null;
 	if(layerNo == 0)
@@ -567,9 +568,11 @@ function addWMTSBaseLayer(layerNo)
 	          version: "1.0.0",
 	          layerInfo: layerInfo
 	        };
-
-
-	   	//_map.removeLayer(WMTSLAYERID);
+	     console.log(_wmtsLayer);
+	     if(_wmtsLayer != null)
+	     {
+	   		_map.removeLayer(_wmtsLayer);
+	   	 }
 	  	_wmtsLayer = new esri.layers.WMTSLayer("https://wmts.geo.admin.ch", options);
 		_wmtsLayer.ID=WMTSLAYERID;
 		_map.addLayer(_wmtsLayer);
@@ -1116,7 +1119,7 @@ function buildLayersList(layers){
     <!-- Header Section-->
     <div id="header">
       <div id="headerText">
-	    <h1 id="title"></h1>
+	    <img id="titleImg" src="images/titleImg.png" width="250" />
 	    <h2 id="subtitle"></h2>
       </div>
       <div id="logoArea">
@@ -1128,7 +1131,7 @@ function buildLayersList(layers){
     
  	<div id="mainWindow" dojotype="dijit.layout.BorderContainer" style="width:100%;height:100%" design="headline" gutters="false">
 
-        <div region="top" dojotype="dijit.layout.ContentPane" id="contentPane" style="width:100%;margin:auto;overflow:visible;background-color:white;margin:0px;padding:0px;z-index:101">
+        <div region="top" dojotype="dijit.layout.ContentPane" id="contentPane" >
             <div id="tabs" style="padding-left:17px;"></div>
     		<div id="bgMapToggleCon">
             	<button id="bgMapToggle"></button>
