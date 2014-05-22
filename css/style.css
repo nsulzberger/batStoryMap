@@ -115,6 +115,12 @@ a:hover{
 	height:100%;
 	width:100%;
 }
+#heatLayer {
+	border:none;
+	padding:0;
+	height:100%;
+	width:100%;
+}
 
 #hoverInfo{
 	font-size:12px;
@@ -147,7 +153,7 @@ a:hover{
 	visibility:hidden;
 }
 
-
+/*
 @media (min-width: 1024px) { 
 
   	#paneLeft {
@@ -166,6 +172,8 @@ a:hover{
 }
 
 @media (min-width:768px) and (max-width: 1024px) { 
+	*/
+@media (min-width:768px) { 
 	#paneLeft{
 		overflow:hidden;
 		width:320px;
@@ -438,15 +446,19 @@ ul.tilelist .blurb {
 }
 
 .quartettInfoItem {
-	float:left;
-	width:100px;
-	padding-top:2px;
+	/*float:left;*/
+	width:250px;
+	padding-top:6px;
+	font-size:12px;
+	font-weight: bold;
 }
 
 .quartettInfoItemValue {
 	float:left;
-	width:150px;
+	width:250px;
 	padding-top:2px;
+	padding-bottom:5px;
+	font-size:12px;
 }
 
 
@@ -533,5 +545,6 @@ ul.tilelist .blurb {
 {
     outline: none;
 }
+
 
 

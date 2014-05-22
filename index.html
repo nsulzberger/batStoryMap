@@ -14,8 +14,21 @@
 
 <script type="text/javascript" src="lib/jquery-1.7.2.min.js"></script>
 <script type="text/javascript" src="lib/common/helper_functions.js"></script>
-<script type="text/javascript">var djConfig = {parseOnLoad: true};</script>
+<script type="text/javascript">
+			// get current path
+            var pathRegex = new RegExp(/\/[^\/]+$/);
+            var locationPath = location.pathname.replace(pathRegex, '');
+			var djConfig = {
+						parseOnLoad: true,
+						packages: [
+                    		{
+                        		name: "modules",
+                        		location: locationPath + '/lib/'
+                    		}
+                ]};
+</script>
 <script type="text/javascript" src="http://serverapi.arcgisonline.com/jsapi/arcgis/?v=3.5"></script>
+<script type="text/javascript" src="lib/heatmap.js"></script>
 <script type="text/javascript" src="colorbox/jquery.colorbox-min.js"></script>
 <script type="text/javascript" src="lib/jquery.animate-colors-min.js"></script>
 
@@ -48,10 +61,16 @@ dojo.require("dijit.layout.BorderContainer");
 dojo.require("dijit.layout.ContentPane");
 dojo.require("dijit.Dialog");
 dojo.require("esri.map");
+dojo.require("esri.layers.FeatureLayer");
+dojo.require("esri.symbols.SimpleFillSymbol"); 
+dojo.require("esri.symbols.SimpleLineSymbol"); 
+dojo.require("esri.renderers.SimpleRenderer");
 dojo.require("esri.dijit.Legend");
 dojo.require("esri.layers.wmts");
 dojo.require("esri.arcgis.utils");
 dojo.require("dijit.form.ToggleButton");
+dojo.require("modules.HeatmapLayer");
+
 
 /******************************************************
 ********************  config section ******************
@@ -63,9 +82,9 @@ var	BOOKMARKS_ALIAS = "Marktregionen";
 var COLOR_ORDER = "green,green,green,red"; // will only use as many colors as you have content (point) layers
 var BINGMAPS_KEY = "";
 
-var STARTPOINT_X = 683000.0; // in EPSG 21781
-var STARTPOINT_Y = 247000.0 // in EPSG 21781
-var STARTZOOMLEVEL = 18; 
+var STARTPOINT_X = 681000.0; // in EPSG 21781
+var STARTPOINT_Y = 248500.0 // in EPSG 21781
+var STARTZOOMLEVEL = 20; 
 
 var SWISSTOPO_BASELAYER_ID = ["ch.swisstopo.pixelkarte-farbe","ch.swisstopo.swissimage"]; // ID vom Layer ist aus Capabilities-File vom WMTS ersichtlich
 var SWISSTOPO_BASELAYER_NAME = ["coloured basemap", "satellite imagery"] 
@@ -120,6 +139,8 @@ var _map;
 var _bookmarks;
 
 var _layerCurrent;
+var _batHeatLayer;
+var _batFeatureLayer;
 
 var _selected;
 
@@ -296,6 +317,36 @@ function init() {
 
 function initMap(layers) {
 
+	/*create bat  heat layer */
+     _batHeatLayer = new HeatmapLayer({
+                config: {
+                "useLocalMaximum": true,
+                "radius": 40,
+                "gradient": {
+                    0.45: "rgb(000,000,255)",
+                    0.55: "rgb(000,255,255)",
+                    0.65: "rgb(000,255,000)",
+                    0.95: "rgb(255,255,000)",
+                    1.00: "rgb(255,000,000)"
+                }
+            },
+            "map": _map,
+            "domNodeId": "heatLayer",
+            "opacity": 0.85
+        });
+
+
+ 	_map.addLayer(_batHeatLayer);
+ 	_map.resize();
+ 	
+	_batFeatureLayer = layers[1].layerObject;
+
+	//dojo.connect(_map, 'onExtentChange', refreshList);
+ 
+	// get features from this layer 
+    getBatFeatures();
+
+
 	var supportLayers = [];
 	var pointLayers = [];
 	
@@ -383,6 +434,7 @@ function initMap(layers) {
 	handleWindowResize();
 	$("#zoomToggle").css("visibility","visible");
 
+
 	// init legend
 	var layerInfo = buildLayersList(layers);
     if(layerInfo.length > 0){
@@ -395,6 +447,8 @@ function initMap(layers) {
     else{
         dojo.byId("legendPanel").innerHTML = "";
     }
+
+
 	
 }
 
@@ -725,6 +779,7 @@ function activateStaticContent()
 
 
 function refreshList() {
+	
 	if(_staticTabSelected == false)
 	{
 		var tile;
@@ -738,6 +793,12 @@ function refreshList() {
 			}		
 		});
 	}
+	
+
+	//get Features for Heatmap
+    getBatFeatures();
+    _batFeatureLayer.hide();
+    _batHeatLayer.show();
 }
 
 function buildLayer(arr,iconDir,root) {
@@ -784,44 +845,20 @@ function postSelection() {
 		_map.infoWindow.hide();
 	} else {
 
-		if(_selected.attributes.getValueCI("ZONE") != null && _selected.attributes.getValueCI("ZONE").replace(/\s/g,"") != "") /*in dem Fall ist es ein Potenzial*/
-		{
-			console.log(_selected.attributes.getValueCI("ZONE") );
-			_map.infoWindow.setTitle("Potenzial: " +_selected.attributes.getValueCI("Title"));
-		}
-		else /*bestehender Standort*/
-		{
-			_map.infoWindow.setTitle("Standort: " +_selected.attributes.getValueCI("Title"));
-		}
+		_map.infoWindow.setTitle("Bat Site: " +_selected.attributes.getValueCI("Title"));
+		
 		var infoContent = "";
-		if(_selected.attributes.getValueCI("ZONE") != null)
+		if(_selected.attributes.getValueCI("SHORT_DESC") != null && _selected.attributes.getValueCI("SHORT_DESC").replace(/\s/g,"") != "")
 		{
-			if(_selected.attributes.getValueCI("ZONE") == "in")
-			{
-				infoContent = infoContent + "<div><div class='quartettInfoItem' >Lage:</div><div class='quartettInfoItemValue'>innerhalb Bauzone</div></div>";
-			}
-			else if(_selected.attributes.getValueCI("ZONE") == "out")
-			{
-				infoContent = infoContent + "<div><div class='quartettInfoItem' >Lage:</div><div class='quartettInfoItemValue'>ausserhalb Bauzone</div></div>";
-			}
+			infoContent = infoContent + "<div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("SHORT_DESC")+"</div></div><br/>";
 		}
-		if(_selected.attributes.getValueCI("AREA") != null && _selected.attributes.getValueCI("AREA").replace(/\s/g,"") != "")
+		if(_selected.attributes.getValueCI("SPECIES") != null && _selected.attributes.getValueCI("SPECIES").replace(/\s/g,"") != "")
 		{
-			infoContent = infoContent + "<div><div class='quartettInfoItem' >Grösse:</div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("AREA")+" m2</div></div>";
+			infoContent = infoContent + "<div><div class='quartettInfoItem' >confirmed species:</div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("SPECIES")+"</div></div>";
 		}
-		if(_selected.attributes.getValueCI("ANBINDUNG") != null && _selected.attributes.getValueCI("ANBINDUNG").replace(/\s/g,"") != "")
-		{
-			infoContent = infoContent + "<div><div class='quartettInfoItem' >Anbindung:</div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("ANBINDUNG")+"</div></div>";
-		}
-		if(_selected.attributes.getValueCI("ADDRESS") != null && _selected.attributes.getValueCI("ADDRESS").replace(/\s/g,"") != "")
-		{
-			infoContent = infoContent + "<div><div class='quartettInfoItem' >Adresse:</div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("ADDRESS")+"</div></div>";
-		}
-
-		if(_selected.attributes.getValueCI("ZONE") != null && _selected.attributes.getValueCI("ZONE").replace(/\s/g,"") != "") /*in dem Fall ist es ein Potential. bestehender Standorte haben keine Detailansicht*/
-		{
-			infoContent = infoContent + "<br/><br/><br/><p><span class='infoWindowLink'>Beschreibung >></span></p>";
-		}
+		
+		infoContent = infoContent + "<br/><br/><p><span class='infoWindowLink'>find out more >></span></p>";
+		
 		_map.infoWindow.setContent(infoContent);
 		_map.infoWindow.show(_selected.geometry);	
 		$(".infoWindowLink").click(function(e) {
@@ -1110,6 +1147,31 @@ function buildLayersList(layers){
   return layerInfos;
   }
 
+ // get the features within the current extent from the feature layer
+ function getBatFeatures() {
+                // set up query
+                var query = new esri.tasks.Query();
+                // only within extent
+                query.geometry = _map.extent;
+                // give me all of them!
+                query.where = "1=1";
+                // make sure I get them back in my spatial reference
+                query.outSpatialReference = _map.spatialReference;
+                // get em!
+                _batFeatureLayer.queryFeatures(query, function (featureSet) {
+                    var data = [];
+                    // if we get results back
+                    if (featureSet && featureSet.features && featureSet.features.length > 0) {
+                        // set data to features
+                        data = featureSet.features;
+                    }
+                    // set heatmap data
+                    _batHeatLayer.setData(data);
+                    console.log("data: "+data);
+                });
+            }
+
+
 
 </script>
 
@@ -1142,10 +1204,10 @@ function buildLayersList(layers){
                 </div>
             </div>
             
-        	<div id="legendCon">
+        	<!--div id="legendCon">
         		<div id="legendTitle">Bedeutung Potentiale</div>
         		<div id="legendPanel"></div>
-        	</div>
+        	</div-->
         </div>
         
         
@@ -1153,14 +1215,16 @@ function buildLayersList(layers){
                             region="left" >
             <ul id="myList" class="tilelist"></ul>
         </div>
-
-        <div id="map" dojotype="dijit.layout.ContentPane" region="center" style="overflow:hidden">
-            <div id="zoomToggle">
-                <img id="zoomIn" src="images/ZoomLight_01.png">
-                <img id="zoomExtent" src="images/ZoomHome.png">
-                <img id="zoomOut" src="images/ZoomLight_03.png">
-            </div><!--?zoomToggle-->    
+        <div id="heatmapArea">
+            <div id="heatLayer"></div> 
+        	<div id="map" dojotype="dijit.layout.ContentPane" region="center" style="overflow:hidden">
+            	<div id="zoomToggle">
+                	<img id="zoomIn" src="images/ZoomLight_01.png">
+                	<img id="zoomExtent" src="images/ZoomHome.png">
+                	<img id="zoomOut" src="images/ZoomLight_03.png">
+            	</div><!--?zoomToggle-->    
             <div id="hoverInfo"></div>
+        </div>
         </div>
 
 
