@@ -14,7 +14,7 @@ body {
 	color:#574846; /*graubraun*/
 	font-size:14px;
 	overflow:hidden;
-	font-family:Georgia, "Times New Roman", Times, serif;
+	font-family:Arial, Helvetica;
 }
 
 a {
@@ -28,7 +28,7 @@ a:hover{
 }
 	  
 #header {
-	height:95px;
+	height:120px;
 	background:black;
 	color:#574846; /*graubraun*/
 	margin:0;
@@ -41,36 +41,31 @@ a:hover{
 	padding-top:5px;
 	padding-left:25px;
 	width:70%;
-	float:left;
-
 }
 
-#title {
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:20px;
-	font-weight:bold;
-	text-align:left;
-	white-space: nowrap;  
-	overflow: hidden;  
-	text-overflow: ellipsis;
-	-o-text-overflow:ellipsis;
-	margin-bottom:4px;
+#titleImg{
+	width:250px;
+	/*float:left;*/
 }
 
 #subtitle {
 	font-family:Arial, Helvetica, sans-serif;
 	font-size:12px;
-	margin-top:0px;
-	margin-bottom:20px;
+	margin-top:5px;
+	margin-bottom:2px;
 	overflow: hidden;
 	font-weight:normal;
+	color:GhostWhite;
+	text-align:left;
+	float:left;
 }
 
 #logoArea{
 	float:right;
-	padding-top:5px;
+	padding-top:10px;
 	padding-right:25px;
 	text-align:right;
+	vertical-align: top;
 }
 
 #social{
@@ -88,6 +83,7 @@ a:hover{
 #logo{
 	border:none;
 	outline:none;
+	background-color: GhostWhite;
 }
 
 #logoImg{
@@ -176,11 +172,11 @@ a:hover{
 @media (min-width:768px) { 
 	#paneLeft{
 		overflow:hidden;
-		width:320px;
+		width:325px;
 		background-color:black;
 	}
 	ul.tilelist {
-	    width: 320px;
+	    width: 325px;
 		padding-left:1px;
 	    display:inline-block;
 		overflow:auto;
@@ -308,6 +304,7 @@ ul.tilelist .blurb {
 	height:150px;
 }
 
+
 .details img {
 	max-width:200px;
 	max-height:150px;
@@ -357,14 +354,14 @@ ul.tilelist .blurb {
 	padding-top:4px;
 	padding-left:20px;
 	padding-right:10px;
-	margin-top:4px;
-	height:36px;
+	margin-top:6px;
+	height:28px;
 	/*width:150px; */
 	margin-left:7px;
 	color:#574846; /*graubraun*/
 	cursor:pointer;
 	font-family:Arial, Helvetica, sans-serif;
-	font-weight:normal;
+	font-weight:bold;
 	font-size:16px;
 }
 
@@ -375,6 +372,28 @@ ul.tilelist .blurb {
 .tab-selected {
 	color:ForestGreen; /*Waldgrün ;) */
 	cursor:default;
+}
+
+.aboutDiv {
+	color: GhostWhite; 
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:normal;	
+	width:110px;
+	float:left;
+	margin-left:4px;
+	margin-top: 5px;
+	text-align:left;
+}
+
+.aboutDivHeader {
+	color: ForestGreen; 
+	font-family:Arial, Helvetica, sans-serif;
+	font-weight:bold;	
+	width:110px;
+	float:left;
+	margin-left:4px;
+	margin-top: 5px;
+	text-align:left;
 }
 
 
@@ -397,7 +416,7 @@ ul.tilelist .blurb {
 }
 
 #bookmarksDiv a {
-	color:#574846; /*graubraun*/
+	color: GhostWhite; /*graubraun*/
 	cursor:pointer;
 	font-family:Arial, Helvetica, sans-serif;
 	font-weight:normal;
@@ -414,7 +433,7 @@ ul.tilelist .blurb {
 	.height:28px;
 	cursor:pointer;
 	z-index:100;
-	color:#574846; /*graubraun*/
+	color:GhostWhite; 
 	font-family:Arial, Helvetica, sans-serif;
 	font-weight:bold;
 }
@@ -425,7 +444,7 @@ ul.tilelist .blurb {
 	margin-left:2px;
 	.margin-top:0px;
 	padding:5px;
-	color:#574846; /*graubraun*/
+	color:GhostWhite; 
 	font-family:Arial, Helvetica, sans-serif;
 }
 
@@ -434,13 +453,15 @@ ul.tilelist .blurb {
 	font-size:12px;
 }
 
-.infoWindowLink {
+
+
+.infoWindowLink, .zoomToLink{
 	color:ForestGreen; /*Waldgrün ;) */
 	cursor:pointer;
 	font-weight:bold;
 }
 
-.infoWindowLink:hover {
+.infoWindowLink:hover, .zoomToLink:hover {
 	color:ForestGreen; /*Waldgrün ;) */
 	text-decoration:underline;
 }

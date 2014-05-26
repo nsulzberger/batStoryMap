@@ -78,8 +78,8 @@ dojo.require("modules.HeatmapLayer");
 
 
 var	WEBMAP_ID = "24c7c2e877674f87a7c5aca20a70f5e9";
-var	BOOKMARKS_ALIAS = "Marktregionen";
-var COLOR_ORDER = "green,green,green,red"; // will only use as many colors as you have content (point) layers
+var	BOOKMARKS_ALIAS = "Bat districts";
+var COLOR_ORDER = "red,green,green,red"; // will only use as many colors as you have content (point) layers
 var BINGMAPS_KEY = "";
 
 var STARTPOINT_X = 681000.0; // in EPSG 21781
@@ -91,21 +91,17 @@ var SWISSTOPO_BASELAYER_NAME = ["coloured basemap", "satellite imagery"]
 var SWISSTOPO_BASELAYER_FORMAT ="jpeg"; // Format ist aus Capabilities-File vom WMTS ersichtlich, ist unterschiedlich pro Layer
 var DEFAULT_BASEMAP_LAYERNO = 0; // 0 = farbige Karte, 1 = Satellite
 var SHOWBASEMAPTOGGLE = true;  //Button zum Wechseln der Hintergrundkarte zwischen Schwarzweiss & Satellit
-var TITLE_INFOTAB = "background information";
+var TITLE_INFOTAB = "About";
 
 var INFO_CONTENT = [{
 					id:1, 
-					infoTitle:"Vorgehen",
-					infoImgUrl: "./images/slide1.jpg",
-					infoSlideUrl: "https://skydrive.live.com/embed?cid=7BA55B96ACD2634D&resid=7BA55B96ACD2634D%21112&authkey=AGGk-Yj1fH_DNbw&em=2",
-					desc: "Die Präsentation zeigt das Vorgehen zur Identifikation der Gebiete mit hoher Affinität zu Logistiknutzungen im Kanton Zürich."
+					infoTitle:"Data provider",
+					infoDesc: "Grün Stadt Zürich, Fachbereich Naturschutz"
 					},
 					{ 
 					id:2,
-					infoTitle:"Logistikmarkt Kanton Zürich",
-					infoImgUrl: "./images/slide2.jpg",
-					infoSlideUrl: "https://skydrive.live.com/embed?cid=7BA55B96ACD2634D&resid=7BA55B96ACD2634D%21113&authkey=AGjHR0sjuxOfy44&em=2",
-					desc: "Die Präsentation enthält einige statistische Kennzahlen zum Logistikmarkt im Kanton Zürich und zeigt beispielhaft einige unterschiedliche Logistikabläufe auf."
+					infoTitle:"Support",
+					infoDesc: "Karin Safi, Fledermausschutz-Beauftragte des Kantons Zürich"
 					}
 
 					];	
@@ -320,7 +316,7 @@ function initMap(layers) {
 	/*create bat  heat layer */
      _batHeatLayer = new HeatmapLayer({
                 config: {
-                "useLocalMaximum": true,
+                "useLocalMaximum": false,
                 "radius": 40,
                 "gradient": {
                     0.45: "rgb(000,000,255)",
@@ -334,7 +330,6 @@ function initMap(layers) {
             "domNodeId": "heatLayer",
             "opacity": 0.85
         });
-
 
  	_map.addLayer(_batHeatLayer);
  	_map.resize();
@@ -409,7 +404,7 @@ function initMap(layers) {
 						colorschemes[index].iconPrefix
 						);
 			contentLayer.color = colorschemes[index].color;
-			contentLayer.title = value.title;
+			contentLayer.title = "Bat watching sites";
 			dojo.connect(contentLayer, "onMouseOver", layer_onMouseOver);
 			dojo.connect(contentLayer, "onMouseOut", layer_onMouseOut);
 			dojo.connect(contentLayer, "onClick", layer_onClick);
@@ -524,27 +519,7 @@ function baselayer_onMouseOut(event)
 
 /* Popup öffnen für Basis-Layer (Regionen) */
 function baselayer_onClick(event) {
-	var feature = event.graphic;
-	_map.infoWindow.setTitle(event.graphic.attributes.getValueCI("Title"));
-
-	var infoContent = "";
-	
-	if(event.graphic.attributes.getValueCI("Short_desc") != null && event.graphic.attributes.getValueCI("Short_desc").replace(/\s/g,"") != "")
-	{
-		infoContent = infoContent + "<div class='infoDescription'>"+event.graphic.attributes.getValueCI("Short_desc")+"</div>";
-	}
-
-	if(event.graphic.attributes.getValueCI("AREA") != null && event.graphic.attributes.getValueCI("AREA").replace(/\s/g,"") != "")
-	{
-		infoContent = infoContent + "<div><div class='quartettInfoItem'>Grösse:</div><div class='quartettInfoItemValue'>" +event.graphic.attributes.getValueCI("AREA")+" m2</div></div><br/><br/>";
-	}
-	infoContent = infoContent + "<p><span class='infoWindowLink'>Beschreibung >></span></p>";
-	_map.infoWindow.setContent(infoContent);
-	_map.infoWindow.show(event.mapPoint);	
-	$(".infoWindowLink").click(function(e) {
-        loadAndShowDetails(feature);
-    });
-	$("#hoverInfo").hide();	
+	// do nothing
 }
 
 function layer_onClick(event)
@@ -566,7 +541,7 @@ function layer_onMouseOver(event)
 	_map.setMapCursor("pointer");
 	var graphic = event.graphic;
 	if (graphic == _selected) return;
-	graphic.setSymbol(graphic.symbol.setHeight(30).setWidth(24));
+	graphic.setSymbol(graphic.symbol.setHeight(44).setWidth(37));
 	$("#hoverInfo").html(graphic.attributes.getValueCI("Title"));
 	var pt = _map.toScreen(graphic.geometry);
 	hoverInfoPos(pt.x,pt.y);
@@ -577,7 +552,7 @@ function layer_onMouseOut(event)
 	if (_isMobile) return;	
 	_map.setMapCursor("default");
 	var graphic = event.graphic;	
-	graphic.setSymbol(graphic.symbol.setHeight(28).setWidth(22));
+	graphic.setSymbol(graphic.symbol.setHeight(42).setWidth(35));
 	$("#hoverInfo").hide();
 }
 
@@ -745,23 +720,21 @@ function activateStaticContent()
 
 	var display;
 	var tile;
-	var img;
-	var footer;
-	var num;
+	var text;
+	var name;
 	var title;
 	
 	$.each(INFO_CONTENT,function(index,value){
 
 		display = "visible";
-		tile = $('<li id="item'+value.id+'" style="display:'+display+'">');
-		img = $('<img src="'+value.infoImgUrl+'">');
+		tile = $('<div ></div>');
+		//img = $('<img src="'+value.infoImgUrl+'">');
 		footer = $('<div class="footer"></div>');
-		num = $('<div class="num" style="background-color:#209a93">'+value.id+'</div>'); /*türkis */
-		title = $('<div class="blurb">'+value.infoTitle+'</div>');
-		$(footer).append(num);
-		$(footer).append(title);
-		$(tile).append(img);
-		$(tile).append(footer);
+		//num = $('<div class="num" style="background-color:#209a93">'+value.id+'</div>'); /*türkis */
+		title = $('<div class="aboutDivHeader">'+value.infoTitle+'</div>');
+		text = $('<div class="aboutDiv">'+value.infoDesc+'</div>');
+		$(tile).append(title);
+		$(tile).append(text);
 		$("#myList").append(tile);
 	});
 	
@@ -796,9 +769,17 @@ function refreshList() {
 	
 
 	//get Features for Heatmap
-    getBatFeatures();
-    _batFeatureLayer.hide();
-    _batHeatLayer.show();
+	if(_map.getZoom() >21)
+	{
+    	getBatFeatures();
+    	_batFeatureLayer.hide();
+    	_batHeatLayer.show();
+	}
+	else
+	{
+		_batFeatureLayer.hide();
+    	_batHeatLayer.hide();
+	}
 }
 
 function buildLayer(arr,iconDir,root) {
@@ -807,7 +788,7 @@ function buildLayer(arr,iconDir,root) {
 	var sym;
 	$.each(arr,function(index,value){
 		pt = new esri.geometry.Point(value.geometry.x,value.geometry.y,value.geometry.spatialReference);
-		sym = new esri.symbol.PictureMarkerSymbol("images/icons/"+iconDir+"/"+root+value.attributes.getValueCI("Number")+".png",22,28);
+		sym = new esri.symbol.PictureMarkerSymbol("images/icons/"+iconDir+"/"+root+value.attributes.getValueCI("Number")+".png",32,40);
 		layer.add(new esri.Graphic(pt,sym,value.attributes));
 	});
 	return layer;
@@ -857,10 +838,14 @@ function postSelection() {
 			infoContent = infoContent + "<div><div class='quartettInfoItem' >confirmed species:</div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("SPECIES")+"</div></div>";
 		}
 		
-		infoContent = infoContent + "<br/><br/><p><span class='infoWindowLink'>find out more >></span></p>";
+		infoContent = infoContent + "<br/><br/><p><span class='zoomToLink'>zoom to ></span><br/>";
+		infoContent = infoContent + "<span class='infoWindowLink'>find out more ></span></p>";
 		
 		_map.infoWindow.setContent(infoContent);
-		_map.infoWindow.show(_selected.geometry);	
+		_map.infoWindow.show(_selected.geometry);
+		$(".zoomToLink").click(function(e) {
+			zoomTo(_selected.geometry);
+		});		
 		$(".infoWindowLink").click(function(e) {
 			loadAndShowDetails(_selected);
 		});		
@@ -880,6 +865,10 @@ function postStaticSelection() {
 	}
 	$("#hoverInfo").hide();
 	
+}
+
+function zoomTo(graphic) {
+	_map.centerAndZoom(graphic, (STARTZOOMLEVEL+2));
 }
 
 
@@ -1094,18 +1083,8 @@ function buildLayersList(layers){
               if (fcMapLayer.showLegend !== false) {
 
               		var title = null;
-			      	if(mapLayer.title == "Ausserhalb_Bauzone_Area")
-			      	{
-			      		title= "Ausserhalb Bauzone";
-			      	}
-			      	else if(mapLayer.title == "Innerhalb_Bauzone_Area")
-			      	{
-			      		title= "Innerhalb Bauzone";
-			      	}
-			     	 else
-			      	{
-			      		title = mapLayer.title;
-			      	}
+			      	title = mapLayer.title;
+			      	
                   	layerInfo = {
                       "layer": fcMapLayer.layerObject,
                       "title": title,
@@ -1165,9 +1144,10 @@ function buildLayersList(layers){
                         // set data to features
                         data = featureSet.features;
                     }
+
+                    console.log(data.length);
                     // set heatmap data
                     _batHeatLayer.setData(data);
-                    console.log("data: "+data);
                 });
             }
 
@@ -1180,14 +1160,12 @@ function buildLayersList(layers){
 <body class="claro">
     <!-- Header Section-->
     <div id="header">
-      <div id="headerText">
-	    <img id="titleImg" src="images/titleImg.png" width="250" />
-	    <h2 id="subtitle"></h2>
-      </div>
       <div id="logoArea">
-        <div id="social"><!--a id="msLink" href="http://storymaps.esri.com" target="_blank">A story map </a><span  class='st_facebook' ></span><span  class='st_twitter' ></span-->
-        </div>
-        <div id="logo"><a id="logoLink" href="http://www.ebp.ch" target="_blank"><img id="logoImg" src="images/ebplogosmall.png" alt="Ernst Basler + Partner AG"></a></div>
+        <div id="logo"><a id="logoLink" href="http://www.ebp.ch" target="_blank"><img id="logoImg" src="images/ebplogosmall.png" alt="Ernst Basler + Partner AG"/></a></div>
+      </div>
+      <div id="headerText" style="">
+	    <img id="titleImg" src="images/titleImg.png" />
+	    <div id="subtitle"></div>
       </div>
     </div>
     
