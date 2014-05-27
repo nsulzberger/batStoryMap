@@ -45,7 +45,6 @@ a:hover{
 
 #titleImg{
 	width:250px;
-	/*float:left;*/
 }
 
 #subtitle {
@@ -57,7 +56,6 @@ a:hover{
 	font-weight:normal;
 	color:GhostWhite;
 	text-align:left;
-	float:left;
 }
 
 #logoArea{
@@ -378,17 +376,20 @@ ul.tilelist .blurb {
 	color: GhostWhite; 
 	font-family:Arial, Helvetica, sans-serif;
 	font-weight:normal;	
-	width:110px;
+	font-size:12px;	
+	width:140px;
 	float:left;
 	margin-left:4px;
 	margin-top: 5px;
+	padding-bottom: 4px;
 	text-align:left;
 }
 
 .aboutDivHeader {
 	color: ForestGreen; 
 	font-family:Arial, Helvetica, sans-serif;
-	font-weight:bold;	
+	font-weight:bold;
+	font-size:12px;	
 	width:110px;
 	float:left;
 	margin-left:4px;

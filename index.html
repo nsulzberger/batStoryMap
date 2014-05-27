@@ -90,18 +90,29 @@ var SWISSTOPO_BASELAYER_ID = ["ch.swisstopo.pixelkarte-farbe","ch.swisstopo.swis
 var SWISSTOPO_BASELAYER_NAME = ["coloured basemap", "satellite imagery"] 
 var SWISSTOPO_BASELAYER_FORMAT ="jpeg"; // Format ist aus Capabilities-File vom WMTS ersichtlich, ist unterschiedlich pro Layer
 var DEFAULT_BASEMAP_LAYERNO = 0; // 0 = farbige Karte, 1 = Satellite
-var SHOWBASEMAPTOGGLE = true;  //Button zum Wechseln der Hintergrundkarte zwischen Schwarzweiss & Satellit
+var SHOWBASEMAPTOGGLE = false;  //Button zum Wechseln der Hintergrundkarte zwischen Schwarzweiss & Satellit
 var TITLE_INFOTAB = "About";
 
-var INFO_CONTENT = [{
-					id:1, 
+var INFO_CONTENT = [
+					{ 
+					id:1,
+					infoTitle:"Created by",
+					infoDesc: "Nicole Sulzberger<br/>Ernst Basler + Partner AG",
+					infoLink: "http://www.ebp.ch",
+					twitter: "nsulzberger",
+					gitHub: "https://github.com/nsulzberger"
+					},
+					{
+					id:2, 
 					infoTitle:"Data provider",
-					infoDesc: "Grün Stadt Zürich, Fachbereich Naturschutz"
+					infoDesc: "Stefan Hose<br/>Grün Stadt Zürich, Fachbereich Naturschutz",
+					infoLink: "https://www.stadt-zuerich.ch/gsz"
 					},
 					{ 
-					id:2,
+					id:3,
 					infoTitle:"Support",
-					infoDesc: "Karin Safi, Fledermausschutz-Beauftragte des Kantons Zürich"
+					infoDesc: "Karin Safi<br/>Fledermausschutz-Beauftragte des Kantons Zürich",
+					infoLink: "http://www.fledermausschutz.ch"
 					}
 
 					];	
@@ -232,7 +243,7 @@ function init() {
 
 
 		// add WMTS layer
-		addWMTSBaseLayer(DEFAULT_BASEMAP_LAYERNO);
+		//addWMTSBaseLayer(DEFAULT_BASEMAP_LAYERNO);
 
 	     //Zoom zum initialen Extent (wegen der Reprojektion stimmt der Extent, der in AGOL definiert ist, nicht mehr)
 	     zoomToStartExtent();
@@ -334,7 +345,7 @@ function initMap(layers) {
  	_map.addLayer(_batHeatLayer);
  	_map.resize();
  	
-	_batFeatureLayer = layers[1].layerObject;
+	_batFeatureLayer = layers[3].layerObject;
 
 	//dojo.connect(_map, 'onExtentChange', refreshList);
  
@@ -346,7 +357,7 @@ function initMap(layers) {
 	var pointLayers = [];
 	
 	$.each(layers,function(index,value){
-		if (value.url == null) {
+		if (value.url == null && value.featureCollection != null && value.featureCollection.layers[0].featureSet != null ) {
 			if (value.featureCollection.layers[0].featureSet.geometryType == "esriGeometryPoint") {
 				pointLayers.push(value);
 			} else {
@@ -721,6 +732,7 @@ function activateStaticContent()
 	var display;
 	var tile;
 	var text;
+	var link;
 	var name;
 	var title;
 	
@@ -732,10 +744,21 @@ function activateStaticContent()
 		footer = $('<div class="footer"></div>');
 		//num = $('<div class="num" style="background-color:#209a93">'+value.id+'</div>'); /*türkis */
 		title = $('<div class="aboutDivHeader">'+value.infoTitle+'</div>');
-		text = $('<div class="aboutDiv">'+value.infoDesc+'</div>');
+		text = $('<div class="aboutDiv">'+value.infoDesc+'<br/><a href='+value.infoLink+' target="blank">'+value.infoLink+'</a></div>');
+		if(value.gitHub != null)
+		{
+			text.append('<br/><a href='+value.gitHub+' target="blank">'+value.gitHub+'</a>');
+		}
+		if(value.twitter != null)
+		{
+			text.append('<br/><a href="https://twitter.com/'+value.twitter+'" target="_blank" class="twitter-follow-button" data-show-count="false" data-show-screen-name="false">Follow @'+value.twitter+' on Twitter</a>');
+		}
+
 		$(tile).append(title);
 		$(tile).append(text);
 		$("#myList").append(tile);
+		//Twitter
+		var js,fjs=document.getElementsByTagName('script')[0],p=/^http:/.test(document.location)?'http':'https';if(!document.getElementById('twitter-wjs')){js=document.createElement('script');js.id='twitter-wjs';js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);};
 	});
 	
 	// event handlers have to be re-assigned every time you load the list...
@@ -1160,11 +1183,8 @@ function buildLayersList(layers){
 <body class="claro">
     <!-- Header Section-->
     <div id="header">
-      <div id="logoArea">
-        <div id="logo"><a id="logoLink" href="http://www.ebp.ch" target="_blank"><img id="logoImg" src="images/ebplogosmall.png" alt="Ernst Basler + Partner AG"/></a></div>
-      </div>
       <div id="headerText" style="">
-	    <img id="titleImg" src="images/titleImg.png" />
+	    <img id="titleImg" src="images/titleImg.png" /><br/>
 	    <div id="subtitle"></div>
       </div>
     </div>
