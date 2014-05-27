@@ -78,7 +78,7 @@ dojo.require("modules.HeatmapLayer");
 
 
 var	WEBMAP_ID = "24c7c2e877674f87a7c5aca20a70f5e9";
-var	BOOKMARKS_ALIAS = "Bat districts";
+var	BOOKMARKS_ALIAS = "Districts";
 var COLOR_ORDER = "red,green,green,red"; // will only use as many colors as you have content (point) layers
 var BINGMAPS_KEY = "";
 
@@ -97,10 +97,11 @@ var INFO_CONTENT = [
 					{ 
 					id:1,
 					infoTitle:"Created by",
-					infoDesc: "Nicole Sulzberger<br/>Ernst Basler + Partner AG",
+					infoDesc: "Nicole Sulzberger",
 					infoLink: "http://www.ebp.ch",
 					twitter: "nsulzberger",
-					gitHub: "https://github.com/nsulzberger"
+					gitHub: "https://github.com/nsulzberger",
+					image: "./images/ebplogosmall.png"
 					},
 					{
 					id:2, 
@@ -335,7 +336,11 @@ function initMap(layers) {
                     0.65: "rgb(000,255,000)",
                     0.95: "rgb(255,255,000)",
                     1.00: "rgb(255,000,000)"
-                }
+                },
+                legend: {
+            		position: 'br',
+            		title: 'Example Distribution'
+        		}   
             },
             "map": _map,
             "domNodeId": "heatLayer",
@@ -740,21 +745,26 @@ function activateStaticContent()
 
 		display = "visible";
 		tile = $('<div ></div>');
-		//img = $('<img src="'+value.infoImgUrl+'">');
-		footer = $('<div class="footer"></div>');
-		//num = $('<div class="num" style="background-color:#209a93">'+value.id+'</div>'); /*türkis */
+
 		title = $('<div class="aboutDivHeader">'+value.infoTitle+'</div>');
-		text = $('<div class="aboutDiv">'+value.infoDesc+'<br/><a href='+value.infoLink+' target="blank">'+value.infoLink+'</a></div>');
+
+		text = $('<div class="aboutDiv"></a></div>');
+		if(value.image!= null)
+		{
+			text.append('<img src="'+value.image+'" style="background-color:White;padding:0px;margin:0px;" />');
+		}
+		text.append(value.infoDesc+'<br/><a href='+value.infoLink+' target="blank">'+value.infoLink);
 		if(value.gitHub != null)
 		{
 			text.append('<br/><a href='+value.gitHub+' target="blank">'+value.gitHub+'</a>');
 		}
 		if(value.twitter != null)
 		{
-			text.append('<br/><a href="https://twitter.com/'+value.twitter+'" target="_blank" class="twitter-follow-button" data-show-count="false" data-show-screen-name="false">Follow @'+value.twitter+' on Twitter</a>');
+			text.append('<br/><a href="https://twitter.com/'+value.twitter+'" target="_blank" class="twitter-follow-button" style="margin-top:5px;" data-show-count="false" data-show-screen-name="false">Follow @'+value.twitter+' on Twitter</a>');
 		}
 
 		$(tile).append(title);
+		
 		$(tile).append(text);
 		$("#myList").append(tile);
 		//Twitter
@@ -854,15 +864,15 @@ function postSelection() {
 		var infoContent = "";
 		if(_selected.attributes.getValueCI("SHORT_DESC") != null && _selected.attributes.getValueCI("SHORT_DESC").replace(/\s/g,"") != "")
 		{
-			infoContent = infoContent + "<div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("SHORT_DESC")+"</div></div><br/>";
+			infoContent = infoContent + "<div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("SHORT_DESC")+"</div></div>";
 		}
 		if(_selected.attributes.getValueCI("SPECIES") != null && _selected.attributes.getValueCI("SPECIES").replace(/\s/g,"") != "")
 		{
-			infoContent = infoContent + "<div><div class='quartettInfoItem' >confirmed species:</div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("SPECIES")+"</div></div>";
+			infoContent = infoContent + "<div><div class='quartettInfoItem' ><img src='./images/binocular.png' /></div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("SPECIES")+"</div></div>";
 		}
 		
-		infoContent = infoContent + "<br/><br/><p><span class='zoomToLink'>zoom to ></span><br/>";
-		infoContent = infoContent + "<span class='infoWindowLink'>find out more ></span></p>";
+		infoContent = infoContent + "<div><div class='quartettInfoItem' ><img src='./images/gearwheels.png' /></div><div class='zoomToLink'>zoom to</div>";
+		infoContent = infoContent + "<div class='infoWindowLink'>find out more</div></div>";
 		
 		_map.infoWindow.setContent(infoContent);
 		_map.infoWindow.show(_selected.geometry);

@@ -49,7 +49,7 @@ a:hover{
 
 #subtitle {
 	font-family:Arial, Helvetica, sans-serif;
-	font-size:12px;
+	font-size:13px;
 	margin-top:5px;
 	margin-bottom:2px;
 	overflow: hidden;
@@ -350,7 +350,7 @@ ul.tilelist .blurb {
 	float:left;
 	background-color:black;
 	padding-top:4px;
-	padding-left:20px;
+	padding-left:3px;
 	padding-right:10px;
 	margin-top:6px;
 	height:28px;
@@ -460,6 +460,8 @@ ul.tilelist .blurb {
 	color:ForestGreen; /*Waldgrün ;) */
 	cursor:pointer;
 	font-weight:bold;
+	padding-top:5px;
+	text-align: left;
 }
 
 .infoWindowLink:hover, .zoomToLink:hover {
@@ -468,15 +470,15 @@ ul.tilelist .blurb {
 }
 
 .quartettInfoItem {
-	/*float:left;*/
-	width:250px;
-	padding-top:6px;
-	font-size:12px;
-	font-weight: bold;
+	float:left;
+	width:32px;
+	height:32px;
+	padding-top:3px;
+	padding-right:5px;
 }
 
 .quartettInfoItemValue {
-	float:left;
+	/*float:left;*/
 	width:250px;
 	padding-top:2px;
 	padding-bottom:5px;
