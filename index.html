@@ -103,18 +103,32 @@ var INFO_CONTENT = [
 					gitHub: "https://github.com/nsulzberger",
 					image: "./images/ebplogosmall.png"
 					},
+					{ 
+					id:2,
+					infoTitle:"Bat dataset",
+					infoDesc: "Bats recorded on systematic walks through the city by bat detector, 2007 - 2010",
+					image: "./images/batLegend.png"
+					},
 					{
-					id:2, 
+					id:3, 
 					infoTitle:"Data provider",
 					infoDesc: "Stefan Hose<br/>Grün Stadt Zürich, Fachbereich Naturschutz",
 					infoLink: "https://www.stadt-zuerich.ch/gsz"
 					},
 					{ 
-					id:3,
+					id:4,
 					infoTitle:"Support",
 					infoDesc: "Karin Safi<br/>Fledermausschutz-Beauftragte des Kantons Zürich",
 					infoLink: "http://www.fledermausschutz.ch"
+					},
+					{ 
+					id:5,
+					infoTitle:"Logo image",
+					infoDesc: "istockphoto.com",
+					infoLink: "http://www.istockphoto.com"
 					}
+
+
 
 					];	
 
@@ -240,10 +254,8 @@ function init() {
 		$("#subtitle").html(response.itemInfo.item.snippet);
 		
 		_map = response.map;
-		
 
-
-		// add WMTS layer
+		// add WMTS layer // not needed anymore, Esri fixed the wmts bug
 		//addWMTSBaseLayer(DEFAULT_BASEMAP_LAYERNO);
 
 	     //Zoom zum initialen Extent (wegen der Reprojektion stimmt der Extent, der in AGOL definiert ist, nicht mehr)
@@ -336,11 +348,7 @@ function initMap(layers) {
                     0.65: "rgb(000,255,000)",
                     0.95: "rgb(255,255,000)",
                     1.00: "rgb(255,000,000)"
-                },
-                legend: {
-            		position: 'br',
-            		title: 'Example Distribution'
-        		}   
+                }
             },
             "map": _map,
             "domNodeId": "heatLayer",
@@ -351,8 +359,6 @@ function initMap(layers) {
  	_map.resize();
  	
 	_batFeatureLayer = layers[3].layerObject;
-
-	//dojo.connect(_map, 'onExtentChange', refreshList);
  
 	// get features from this layer 
     getBatFeatures();
@@ -444,22 +450,6 @@ function initMap(layers) {
 	dojo.connect(_map.infoWindow,"onHide",infoWindow_onHide);
 	handleWindowResize();
 	$("#zoomToggle").css("visibility","visible");
-
-
-	// init legend
-	var layerInfo = buildLayersList(layers);
-    if(layerInfo.length > 0){
-		var legendDijit = new esri.dijit.Legend({
-			map:map,
-			layerInfos:layerInfo
-		},"legendPanel");
-        legendDijit.startup();
-    }
-    else{
-        dojo.byId("legendPanel").innerHTML = "";
-    }
-
-
 	
 }
 
@@ -749,11 +739,16 @@ function activateStaticContent()
 		title = $('<div class="aboutDivHeader">'+value.infoTitle+'</div>');
 
 		text = $('<div class="aboutDiv"></a></div>');
+		
+		text.append(value.infoDesc);
 		if(value.image!= null)
 		{
-			text.append('<img src="'+value.image+'" style="background-color:White;padding:0px;margin:0px;" />');
+			text.append('<img src="'+value.image+'" style="background-color:White;padding-top:2px;margin:0px;" />');
 		}
-		text.append(value.infoDesc+'<br/><a href='+value.infoLink+' target="blank">'+value.infoLink);
+		if(value.infoLink != null)
+		{
+			text.append('<br/><a href='+value.infoLink+' target="blank">'+value.infoLink+'</a>');
+		}	
 		if(value.gitHub != null)
 		{
 			text.append('<br/><a href='+value.gitHub+' target="blank">'+value.gitHub+'</a>');
@@ -776,11 +771,6 @@ function activateStaticContent()
 	
 	$("ul.tilelist").animate({ scrollTop: 0 }, { duration: 200 } );
 
-
-
-
-
-
 }
 
 
@@ -799,7 +789,6 @@ function refreshList() {
 			}		
 		});
 	}
-	
 
 	//get Features for Heatmap
 	if(_map.getZoom() >21)
@@ -871,7 +860,7 @@ function postSelection() {
 			infoContent = infoContent + "<div><div class='quartettInfoItem' ><img src='./images/binocular.png' /></div><div class='quartettInfoItemValue'>" +_selected.attributes.getValueCI("SPECIES")+"</div></div>";
 		}
 		
-		infoContent = infoContent + "<div><div class='quartettInfoItem' ><img src='./images/gearwheels.png' /></div><div class='zoomToLink'>zoom to</div>";
+		infoContent = infoContent + "<div><div class='quartettInfoItem' ><img src='./images/gearwheels.png' /></div><div class='zoomToLink'>zoom to site</div>";
 		infoContent = infoContent + "<div class='infoWindowLink'>find out more</div></div>";
 		
 		_map.infoWindow.setContent(infoContent);
@@ -943,9 +932,6 @@ function showDetails(graphic, description)
 		//var titleDiv = $('<div class="title">'+graphic.attributes.getValueCI("Title")+'</div>');
 		//Titel hat Default-Text, weil Datenbank kein Wert befüllt hat 
 		var titleDiv = $('<div class="title">Das ist ein Platzhaltertext</div>');
-
-
-		
 
 	    var leftDiv = $('<div class="leftDiv"></div>');
 	    var rightDiv = $('<div class="rightDiv"></div>');
@@ -1103,63 +1089,7 @@ function getSortedColorSchemes() {
 		
 }
 
-//build a list of layers to dispaly in the legend
-function buildLayersList(layers){
-
- //layers  arg is  response.itemInfo.itemData.operationalLayers;
-  var layerInfos = [];
-  dojo.forEach(layers, function (mapLayer, index) {
-      var layerInfo = {};
-      if (mapLayer.featureCollection && mapLayer.type !== "CSV") {
-        if (mapLayer.featureCollection.showLegend === true) {
-            dojo.forEach(mapLayer.featureCollection.layers, function (fcMapLayer) {
-              if (fcMapLayer.showLegend !== false) {
-
-              		var title = null;
-			      	title = mapLayer.title;
-			      	
-                  	layerInfo = {
-                      "layer": fcMapLayer.layerObject,
-                      "title": title,
-                      "defaultSymbol": false
-                  	};
-                  	if (mapLayer.featureCollection.layers.length > 1) {
-                      layerInfo.title += " - " + fcMapLayer.layerDefinition.name;
-                  	}
-                  	layerInfos.push(layerInfo);
-              }
-            });
-          }
-      } else if (mapLayer.showLegend !== false && mapLayer.layerObject) {
-      var showDefaultSymbol = false;
-      if (mapLayer.layerObject.version < 10.1 && (mapLayer.layerObject instanceof esri.layers.ArcGISDynamicMapServiceLayer || mapLayer.layerObject instanceof esri.layers.ArcGISTiledMapServiceLayer)) {
-        showDefaultSymbol = true;
-      }
-
-      
-      layerInfo = {
-        "layer": mapLayer.layerObject,
-        "title": mapLayer.title,
-        "defaultSymbol": showDefaultSymbol
-      };
-        //does it have layers too? If so check to see if showLegend is false
-        if (mapLayer.layers) {
-            var hideLayers = dojo.map(dojo.filter(mapLayer.layers, function (lyr) {
-                return (lyr.showLegend === false);
-            }), function (lyr) {
-                return lyr.id;
-            });
-            if (hideLayers.length) {
-                layerInfo.hideLayers = hideLayers;
-            }
-        }
-        layerInfos.push(layerInfo);
-    }
-  });
-  return layerInfos;
-  }
-
- // get the features within the current extent from the feature layer
+ // get the bat features within the current extent from the feature layer
  function getBatFeatures() {
                 // set up query
                 var query = new esri.tasks.Query();
@@ -1182,9 +1112,7 @@ function buildLayersList(layers){
                     // set heatmap data
                     _batHeatLayer.setData(data);
                 });
-            }
-
-
+}
 
 </script>
 
@@ -1194,7 +1122,7 @@ function buildLayersList(layers){
     <!-- Header Section-->
     <div id="header">
       <div id="headerText" style="">
-	    <img id="titleImg" src="images/titleImg.png" /><br/>
+	    <img id="titleImg" src="images/titleImg.png" />
 	    <div id="subtitle"></div>
       </div>
     </div>
@@ -1211,11 +1139,6 @@ function buildLayersList(layers){
                 <div id="bookmarksDiv">
                 </div>
             </div>
-            
-        	<!--div id="legendCon">
-        		<div id="legendTitle">Bedeutung Potentiale</div>
-        		<div id="legendPanel"></div>
-        	</div-->
         </div>
         
         

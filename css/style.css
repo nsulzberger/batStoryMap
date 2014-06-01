@@ -28,7 +28,7 @@ a:hover{
 }
 	  
 #header {
-	height:120px;
+	height:100px;
 	background:black;
 	color:#574846; /*graubraun*/
 	margin:0;
@@ -43,13 +43,26 @@ a:hover{
 	width:70%;
 }
 
+#title {
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:20px;
+	font-weight:bold;
+	text-align:left;
+	white-space: nowrap;  
+	overflow: hidden;  
+	text-overflow: ellipsis;
+	-o-text-overflow:ellipsis;
+	margin-bottom:4px;
+	color:GhostWhite;
+}
+
 #titleImg{
-	width:250px;
+	width:280px;
 }
 
 #subtitle {
 	font-family:Arial, Helvetica, sans-serif;
-	font-size:13px;
+	font-size:12px;
 	margin-top:5px;
 	margin-bottom:2px;
 	overflow: hidden;
@@ -282,7 +295,7 @@ ul.tilelist .blurb {
 
 .details .title {
 	color:#574846; /*graubraun*/
-	font-family:Arial, Helvetica, sans-serif;
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-size:20px;
 	font-weight: bold;
 }
@@ -329,7 +342,7 @@ ul.tilelist .blurb {
 }
 
 .detailsSubTitle{
-	font-family:Arial, Helvetica, sans-serif;
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-size:12px;
 	font-weight: bold;
 	color:#574846; /*graubraun*/
@@ -341,7 +354,7 @@ ul.tilelist .blurb {
 }
 
 .detailsList{
-	font-family:Arial, Helvetica, sans-serif;
+	font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
 	font-size:12px;
 	color:#574846; /*graubraun*/
 }
